@@ -15,7 +15,13 @@ const adminRegister = async (req, res) => {
       if (rows.length > 0) {
         userExists = true;
       }
-    });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err });
+    })
+    .finally(() => {
+      connection().end();
+    })
 
   if (!userExists) {
     await connection()
@@ -29,7 +35,10 @@ const adminRegister = async (req, res) => {
       })
       .catch((err) => {
         res.status(400).json({ error: err.message });
-      });
+      })
+      .finally(() => {
+        connection().end();
+      })
   } else {
     res.status(400).json({ error: "admin already exists" });
   }
@@ -50,17 +59,23 @@ const adminLogin = (req, res) => {
           const accesstoken = jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: 60 * 60,
           });
-          
+
           // adding token to the db
 
           connection()
             .promise()
-            .query(`UPDATE admin SET token='${accesstoken}' where email='${rows[0].email}'`)
+            .query(
+              `UPDATE admin SET token='${accesstoken}' where email='${rows[0].email}'`
+            )
             .then(() => {
               res.status(200).json({ values: rows, token: accesstoken });
-            }).catch(err => {
+            })
+            .catch((err) => {
               res.status(400).json({ error: err.message });
             })
+            .finally(() => {
+              connection().end();
+            });
         } else {
           res.status(400).json({ error: "Invalid email or password" });
         }
@@ -69,10 +84,12 @@ const adminLogin = (req, res) => {
         res
           .status(500)
           .json({ error: "invalid error occurred try again later " + err });
+      })
+      .finally(() => {
+        connection().end();
       });
   }
 };
-
 
 const logout = async (req, res) => {
   await connection()
@@ -82,7 +99,10 @@ const logout = async (req, res) => {
       res.status(200).json({ success: "succesfully logged out" });
     })
     .catch((err) => {
-      res.status(500).json({ error: err  });
+      res.status(500).json({ error: err });
+    })
+    .finally(() => {
+      connection().end();
     });
 };
-module.exports = { adminRegister, adminLogin,logout };
+module.exports = { adminRegister, adminLogin, logout };

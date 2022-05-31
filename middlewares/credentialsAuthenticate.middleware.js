@@ -21,7 +21,10 @@ module.exports = (req, res, next) => {
           } else {
             res.status(400).json({ error: "Invalid .. Login again" });
           }
-        });
+        })
+        .finally(()=>{
+          connection().end();
+        })
     }
   });
 };

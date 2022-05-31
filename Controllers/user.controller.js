@@ -25,9 +25,12 @@ const userRegister = async (req, res, next) => {
         `insert into users values(null,'${name}','${email}','${password}')`
       )
       .then(() => {
-        connection().end();
+        
         res.status(201).send({ msg: "success" });
-      });
+      })
+      .finally(() => {
+        connection().end();
+      })
   }
 };
 
@@ -59,7 +62,10 @@ const userLogin = async (req, res) => {
             })
             .catch((err) => {
               res.status(400).json({ error: err.message });
-            });
+            })
+            .finally(() => {
+              connection().end();
+            })
         } else {
           res.status(400).json({ error: "Invalid email or password" });
         }
@@ -68,7 +74,10 @@ const userLogin = async (req, res) => {
         res
           .status(500)
           .json({ error: "invalid error occurred try again later " + err });
-      });
+      })
+      .finally(() => {
+        connection().end();
+      })
   }
 };
 
@@ -90,7 +99,10 @@ const logout = async (req, res) => {
     })
     .catch((err) => {
       res.status(500).json({ error: err  });
-    });
+    })
+    .finally(() => {
+      connection().end();
+    })
 };
 
 module.exports = { userRegister, userLogin, logout };

@@ -2,6 +2,7 @@ const { urlencoded } = require("express");
 const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
+const settings = require("./settings");
 
 const checkAuth = require("./middlewares/credentialsAuthenticate.middleware");
 
@@ -14,6 +15,8 @@ const { JsonWebTokenError } = require("jsonwebtoken");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/images/", express.static(`${settings.PROJECT_DIR}/uploads/`));
+
 
 app.get("/", checkAuth, async (req, res) => {
   res.send(req.email);

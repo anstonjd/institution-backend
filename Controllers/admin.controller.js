@@ -8,6 +8,14 @@ const adminRegister = async (req, res) => {
 
   let userExists = false;
 
+  connection().connect(function(error){
+    if(!!error){
+      console.log(error);
+    }else{
+      console.log('Connected!:)');
+    }
+  });
+
   await connection()
     .promise()
     .query(`select * from admin where email = '${email}'`)
@@ -44,10 +52,13 @@ const adminRegister = async (req, res) => {
   }
 };
 
-const adminLogin = (req, res) => {
+const adminLogin =  (req, res) => {
   const { email, password } = req.body;
 
   if (email && password) {
+
+    
+    
     connection()
       .promise()
       .query(

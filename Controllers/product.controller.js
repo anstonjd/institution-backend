@@ -12,6 +12,7 @@ const createProduct = async (req, res) => {
 
   let { name, description, allowed_courses } = formData;
   let image = req.product_name;
+  console.log(formData);
 
   //   TODO: clean the data
 
@@ -21,6 +22,7 @@ const createProduct = async (req, res) => {
       `INSERT INTO products (id, name, image, description, allowed_courses) VALUES (NULL, '${name}', '${image}', '${description}', '${allowed_courses}');`
     )
     .then(() => {
+      connection().end();
       res.status(200).json({ success: "product created successfully" });
     })
     .catch((err) => {
@@ -34,12 +36,16 @@ const viewProduct = async (req, res) => {
     .promise()
     .query(`select * from products where id=${productId}`)
     .then(([rows, fields]) => {
+      connection().end();
       res.status(200).json(rows);
       res.send();
     })
     .catch((err) => {
       res.status(500).json({ error: err.message });
-    });
+    })
+    .finally(() => {
+      connection().end();
+    })
 };
 
 const getAllProducts = async (req, res) => {
@@ -47,12 +53,19 @@ const getAllProducts = async (req, res) => {
     .promise()
     .query(`select * from products`)
     .then(([rows, fields]) => {
+      connection().end();
+      connection().end();
       res.status(200).json(rows);
-      res.send();
+      
+      // res.send();
     })
     .catch((err) => {
       res.status(500).json({ error: err.message });
-    });
+      connection().end();
+    })
+    .finally(() => {
+      connection().end();
+    })
 };
 
 const updateProduct = async (req, res) => {

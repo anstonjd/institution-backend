@@ -22,7 +22,7 @@ const userRegister = async (req, res, next) => {
     await connection()
       .promise()
       .query(
-        `insert into users values(null,'${name}','${email}','${password}')`
+        `insert into users values(null,'${name}','${email}','${password}',null)`
       )
       .then(() => {
         
@@ -31,6 +31,9 @@ const userRegister = async (req, res, next) => {
       .finally(() => {
         connection().end();
       })
+  }
+  else{
+    res.status(400).send({ msg: "user already exists" });
   }
 };
 

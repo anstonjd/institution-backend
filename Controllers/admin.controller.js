@@ -65,6 +65,7 @@ const adminLogin =  (req, res) => {
         `select * from admin where email = '${email}' and password = '${password}'`
       )
       .then(([rows, fields]) => {
+        connection().end();
         if (rows.length > 0) {
           let data = { email: rows[0].email, userType: "admin" };
           const accesstoken = jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, {
@@ -79,7 +80,8 @@ const adminLogin =  (req, res) => {
               `UPDATE admin SET token='${accesstoken}' where email='${rows[0].email}'`
             )
             .then(() => {
-              res.status(200).json({ values: rows, token: accesstoken });
+              connection().end();
+              res.status(200).json({ values: rows, userType:"admin", token: accesstoken });
             })
             .catch((err) => {
               res.status(400).json({ error: err.message });
@@ -107,6 +109,7 @@ const logout = async (req, res) => {
     .promise()
     .query(`update admin set token=null where email='${req.email}'`)
     .then(() => {
+      connection().end();
       res.status(200).json({ success: "succesfully logged out" });
     })
     .catch((err) => {

@@ -31,8 +31,7 @@ router.get("/product/:product", credAuth, product.viewProduct);
 
 router.post(
   "/product",
-  credAuth,
-  adminOnly,
+  
   upload.single("product_image"),
   product.createProduct
 );
